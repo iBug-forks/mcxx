@@ -1,23 +1,23 @@
 /*--------------------------------------------------------------------
   (C) Copyright 2006-2014 Barcelona Supercomputing Center
                           Centro Nacional de Supercomputacion
-  
+
   This file is part of Mercurium C/C++ source-to-source compiler.
-  
-  See AUTHORS file in the top level directory for information 
+
+  See AUTHORS file in the top level directory for information
   regarding developers and contributors.
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 3 of the License, or (at your option) any later version.
-  
+
   Mercurium C/C++ source-to-source compiler is distributed in the hope
   that it will be useful, but WITHOUT ANY WARRANTY; without even the
   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the GNU Lesser General Public License for more
   details.
-  
+
   You should have received a copy of the GNU Lesser General Public
   License along with Mercurium C/C++ source-to-source compiler; if
   not, write to the Free Software Foundation, Inc., 675 Mass Ave,
@@ -754,11 +754,11 @@ declaration_sequence_opt : /* empty */
 }
 ;
 
-declaration : block_declaration 
+declaration : block_declaration
 {
 	$$ = $1;
 }
-| function_definition 
+| function_definition
 {
 	$$ = $1;
 }
@@ -876,7 +876,7 @@ common_block_declaration : asm_definition
 {
 	$$ = $1;
 }
-| label_declaration 
+| label_declaration
 {
 	$$ = $1;
 }
@@ -919,7 +919,7 @@ label_declaration : LABEL label_declarator_seq ';'
 }
 ;
 
-label_declarator_seq : identifier_token 
+label_declarator_seq : identifier_token
 {
     AST symbol_holder = ASTLeaf(AST_SYMBOL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 	$$ = ASTListLeaf(symbol_holder);
@@ -989,14 +989,14 @@ gcc_attribute_value : identifier_token
 | identifier_token '(' expression_list ')'
 {
 	AST identif1 = ASTLeaf(AST_SYMBOL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
-	
+
 	$$ = ASTMake2(AST_GCC_ATTRIBUTE_EXPR, identif1, $3, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
 ;
 /* End of GNU extension */
 
 // Assembler definition
-// 
+//
 // GNU Extensions.
 // The first one includes the standard 'asm-definition' but also allows for a
 // volatile optional that is exclusive from gcc. The important thing here is
@@ -1008,7 +1008,7 @@ asm_definition : ASM volatile_optional '(' string_literal ')' ';'
 // From here, none of these asm-definitions are standard but gcc only
 | ASM volatile_optional '(' string_literal ':' asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, $6, NULL, NULL, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
@@ -1020,50 +1020,50 @@ asm_definition : ASM volatile_optional '(' string_literal ')' ';'
 // ( string_literal :: ) [C++ only] [2]
 | ASM volatile_optional '(' string_literal ':' asm_operand_list ':' asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, $6, $8, NULL, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
 // [1] and [2]
 | ASM volatile_optional '(' string_literal TWO_COLONS asm_operand_list ')'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, NULL, NULL, $6, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
 // ( string_literal : asm_operand_list : asm_operand_list : asm_operand_list )
 | ASM volatile_optional '(' string_literal ':' asm_operand_list ':' asm_operand_list ':' asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, $6, $8, $10, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-// ( string_literal :: asm_operand_list ) 
-// ( string_literal :: ) 
+// ( string_literal :: asm_operand_list )
+// ( string_literal :: )
 | ASM volatile_optional '(' string_literal TWO_COLONS asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, NULL, $6, NULL, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-// ( string_literal :: asm_operand_list : asm_operand_list ) 
+// ( string_literal :: asm_operand_list : asm_operand_list )
 // ( string_literal :: : asm_operand_list )
 // ( string_literal :: asm_operand_list : )
 // ( string_literal :: : )
 // ( string_literal ::: ) <-- Note that ":::" is lexed as ":: :"
 | ASM volatile_optional '(' string_literal TWO_COLONS asm_operand_list ':' asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, NULL, $6, $8, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-// ( string_literal : asm_operand_list :: asm_operand_list ) 
-// ( string_literal : :: asm_operand_list ) 
-// ( string_literal : asm_operand_list :: ) 
+// ( string_literal : asm_operand_list :: asm_operand_list )
+// ( string_literal : :: asm_operand_list )
+// ( string_literal : asm_operand_list :: )
 // ( string_literal : :: )  <-- Note that this is ": ::" not ":::"
 | ASM volatile_optional '(' string_literal ':' asm_operand_list TWO_COLONS asm_operand_list ')' ';'
 {
-	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS, 
+	AST asm_parms = ASTMake4(AST_GCC_ASM_DEF_PARMS,
 			$4, $6, NULL, $8, ast_get_locus($4), NULL);
 	$$ = ASTMake2(AST_GCC_ASM_DEFINITION, $2, asm_parms, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
@@ -1100,7 +1100,7 @@ asm_operand_list_nonempty : asm_operand
 }
 ;
 
-asm_operand : string_literal '(' expression ')' 
+asm_operand : string_literal '(' expression ')'
 {
 	$$ = ASTMake3(AST_GCC_ASM_OPERAND, NULL, $1, $3, ast_get_locus($1), NULL);
 }
@@ -1896,8 +1896,8 @@ type_specifier_seq_0 : nontype_specifier_seq type_specifier_not_ended_with_ident
 }
 | nontype_specifier_seq_with_SUSL %merge<ambiguityHandler>
 {
-    $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ, $1, 
-        ASTLeaf(AST_INT_TYPE, ast_get_locus($1), NULL), 
+    $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ, $1,
+        ASTLeaf(AST_INT_TYPE, ast_get_locus($1), NULL),
         NULL, ast_get_locus($1), NULL);
 }
 ;
@@ -1954,13 +1954,13 @@ explicit_simple_type_specifier : named_simple_type_specifier
 {
     $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ, NULL, $1, NULL, ast_get_locus($1), NULL);
 }
-|  simple_type_specifier_not_ended_with_identifier 
+|  simple_type_specifier_not_ended_with_identifier
 {
     $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ, NULL, $1, NULL, ast_get_locus($1), NULL);
 }
 | type_specifier_SUSL
 {
-    $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ, 
+    $$ = ASTMake3(AST_TYPE_SPECIFIER_SEQ,
             NULL, $1, NULL,
             ast_get_locus($1), NULL);
 }
@@ -2353,7 +2353,7 @@ ptr_operator : '*'
 }
 ;
 
-/* 
+/*
    A nonfunctional declarator will never generate a function declarator
  */
 
@@ -2725,7 +2725,7 @@ enum_head : enum_key attribute_specifier_seq_opt identifier_opt enum_base_opt
 }
 | enum_key attribute_specifier_seq_opt nested_name_specifier identifier_token enum_base_opt
 {
-	AST name = ASTMake3(AST_QUALIFIED_ID, NULL, $3, 
+	AST name = ASTMake3(AST_QUALIFIED_ID, NULL, $3,
                 ASTLeaf(AST_SYMBOL, make_locus(@4.first_filename, @4.first_line, @4.first_column), $4.token_text),
                 ast_get_locus($3), NULL);
 
@@ -3077,12 +3077,12 @@ parameter_declaration_clause : parameter_declaration_clause_nonempty %merge<ambi
 {
     AST variadic_tree = ASTLeaf(AST_VARIADIC_ARG, make_locus(@3.first_filename, @3.first_line, @3.first_column), $3.token_text);
 	$$ = ASTList($1, variadic_tree);
-} 
+}
 | parameter_declaration_clause_nonempty ELLIPSIS %merge<ambiguityHandler>
 {
     AST variadic_tree = ASTLeaf(AST_VARIADIC_ARG, make_locus(@2.first_filename, @2.first_line, @2.first_column), $2.token_text);
 	$$ = ASTList($1, variadic_tree);
-} 
+}
 // C++ "T f(...)" is the same as C "T f()" since
 // C++ "T f()" is the same as C "T f(void)"
 | ELLIPSIS
@@ -3473,7 +3473,7 @@ ctor_initializer_opt : /* empty */
 }
 ;
 
-non_extension_function_definition : function_definition_header ctor_initializer_opt function_body 
+non_extension_function_definition : function_definition_header ctor_initializer_opt function_body
 {
     $$ = ASTMake3(AST_FUNCTION_DEFINITION, $1, $2, $3, ast_get_locus($1), NULL);
 }
@@ -3661,12 +3661,12 @@ member_declaration : decl_specifier_seq_0 member_declarator_list ';' %merge<ambi
 {
     $$ = $1;
 }
-| static_assert_declaration 
+| static_assert_declaration
 {
     $$ = $1;
 }
 // This is a common tolerated error
-| ';' 
+| ';'
 {
 	$$ = ASTLeaf(AST_EMPTY_DECL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -3753,7 +3753,7 @@ friend_declarator : functional_declarator
 }
 ;
 
-attribute_specifier_seq_and_virt_specifier_seq_opt : /* empty */ 
+attribute_specifier_seq_and_virt_specifier_seq_opt : /* empty */
 {
     $$ = NULL;
 }
@@ -4299,7 +4299,7 @@ jump_statement : BREAK ';'
 | GOTO identifier_token ';'
 {
 	AST identifier = ASTLeaf(AST_SYMBOL, make_locus(@2.first_filename, @2.first_line, @2.first_column), $2.token_text);
-	
+
 	$$ = ASTMake1(AST_GOTO_STATEMENT, identifier, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
 // GNU Extension
@@ -4416,7 +4416,7 @@ primary_expression : literal
 {
 	$$ = ASTLeaf(AST_THIS_VARIABLE, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| '(' expression ')' 
+| '(' expression ')'
 {
 	$$ = ASTMake1(AST_PARENTHESIZED_EXPRESSION, $2, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -4458,18 +4458,18 @@ primary_expression : literal
 
 /* GNU extension */
 /*
-     __has_nothrow_assign ( type-id )   
+     __has_nothrow_assign ( type-id )
      __has_nothrow_constructor ( type-id )
      __has_nothrow_copy ( type-id )
-     __has_trivial_assign ( type-id )   
+     __has_trivial_assign ( type-id )
      __has_trivial_constructor ( type-id )
      __has_trivial_copy ( type-id )
      __has_trivial_destructor ( type-id )
-     __has_virtual_destructor ( type-id )     
+     __has_virtual_destructor ( type-id )
      __is_abstract ( type-id )
      __is_base_of ( type-id , type-id )
      __is_class ( type-id )
-     __is_convertible_to ( type-id , type-id )     
+     __is_convertible_to ( type-id , type-id )
      __is_empty ( type-id )
      __is_enum ( type-id )
      __is_literal_type ( type-id )
@@ -4491,7 +4491,7 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-| GXX_HAS_TRIVIAL_ASSIGN '(' type_id ')'   
+| GXX_HAS_TRIVIAL_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
@@ -4507,7 +4507,7 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-| GXX_HAS_VIRTUAL_DESTRUCTOR '(' type_id ')'     
+| GXX_HAS_VIRTUAL_DESTRUCTOR '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
@@ -4523,7 +4523,7 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-| GXX_IS_CONVERTIBLE_TO '(' type_id ',' type_id ')'     
+| GXX_IS_CONVERTIBLE_TO '(' type_id ',' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
@@ -5071,7 +5071,7 @@ postfix_expression : primary_expression
 {
 	$$ = ASTMake2(AST_DYNAMIC_CAST, $3, ASTListLeaf($6), make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| STATIC_CAST '<' type_id '>' '(' expression ')' 
+| STATIC_CAST '<' type_id '>' '(' expression ')'
 {
 	$$ = ASTMake2(AST_STATIC_CAST, $3, ASTListLeaf($6), make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -5193,7 +5193,7 @@ unary_operator : '*'
 {
 	$$ = AST_DERREFERENCE;
 }
-| '&' 
+| '&'
 {
 	$$ = AST_REFERENCE;
 }
@@ -5215,7 +5215,7 @@ unary_operator : '*'
 }
 ;
 
-new_expression : TOKEN_NEW new_type_id 
+new_expression : TOKEN_NEW new_type_id
 {
 	$$ = ASTMake4(AST_NEW_EXPRESSION, NULL, NULL, $2, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -5223,7 +5223,7 @@ new_expression : TOKEN_NEW new_type_id
 {
 	$$ = ASTMake4(AST_NEW_EXPRESSION, NULL, NULL, $2, $3, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TOKEN_NEW new_placement new_type_id 
+| TOKEN_NEW new_placement new_type_id
 {
 	$$ = ASTMake4(AST_NEW_EXPRESSION, NULL, $2, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -5231,7 +5231,7 @@ new_expression : TOKEN_NEW new_type_id
 {
 	$$ = ASTMake4(AST_NEW_EXPRESSION, NULL, $2, $3, $4, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TWO_COLONS TOKEN_NEW new_type_id 
+| TWO_COLONS TOKEN_NEW new_type_id
 {
 	AST global_op = ASTLeaf(AST_GLOBAL_SCOPE, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 
@@ -5243,7 +5243,7 @@ new_expression : TOKEN_NEW new_type_id
 
 	$$ = ASTMake4(AST_NEW_EXPRESSION, global_op, NULL, $3, $4, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TWO_COLONS TOKEN_NEW new_placement new_type_id 
+| TWO_COLONS TOKEN_NEW new_placement new_type_id
 {
 	AST global_op = ASTLeaf(AST_GLOBAL_SCOPE, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 
@@ -5255,7 +5255,7 @@ new_expression : TOKEN_NEW new_type_id
 
 	$$ = ASTMake4(AST_NEW_EXPRESSION, global_op, $3, $4, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TOKEN_NEW '(' type_id ')' 
+| TOKEN_NEW '(' type_id ')'
 {
 	$$ = ASTMake4(AST_NEW_TYPE_ID_EXPR, NULL, NULL, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -5263,7 +5263,7 @@ new_expression : TOKEN_NEW new_type_id
 {
 	$$ = ASTMake4(AST_NEW_TYPE_ID_EXPR, NULL, NULL, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TOKEN_NEW new_placement '(' type_id ')' 
+| TOKEN_NEW new_placement '(' type_id ')'
 {
 	$$ = ASTMake4(AST_NEW_TYPE_ID_EXPR, NULL, $2, $4, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -5271,7 +5271,7 @@ new_expression : TOKEN_NEW new_type_id
 {
 	$$ = ASTMake4(AST_NEW_TYPE_ID_EXPR, NULL, $2, $4, $6, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TWO_COLONS TOKEN_NEW '(' type_id ')' 
+| TWO_COLONS TOKEN_NEW '(' type_id ')'
 {
 	AST global_op = ASTLeaf(AST_GLOBAL_SCOPE, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 
@@ -5283,7 +5283,7 @@ new_expression : TOKEN_NEW new_type_id
 
 	$$ = ASTMake4(AST_NEW_TYPE_ID_EXPR, global_op, NULL, $4, $6, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| TWO_COLONS TOKEN_NEW new_placement '(' type_id ')' 
+| TWO_COLONS TOKEN_NEW new_placement '(' type_id ')'
 {
 	AST global_op = ASTLeaf(AST_GLOBAL_SCOPE, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 
@@ -6011,7 +6011,7 @@ operator : TOKEN_NEW
 {
 	$$ = ASTLeaf(AST_DIV_OPERATOR, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
-| '%' 
+| '%'
 {
 	$$ = ASTLeaf(AST_MOD_OPERATOR, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }
@@ -6180,7 +6180,7 @@ template_argument_list : template_argument %merge<ambiguityHandler>
 template_argument : template_assignment_expression %merge<ambiguityHandler>
 {
 	$$ = ASTMake1(AST_TEMPLATE_EXPRESSION_ARGUMENT,
-			ASTMake1(AST_EXPRESSION, $1, ast_get_locus($1), NULL), 
+			ASTMake1(AST_EXPRESSION, $1, ast_get_locus($1), NULL),
              ast_get_locus($1), NULL);
 }
 | type_id_not_ellipsis %merge<ambiguityHandler>
@@ -6190,7 +6190,7 @@ template_argument : template_assignment_expression %merge<ambiguityHandler>
 |template_assignment_expression ELLIPSIS %merge<ambiguityHandler>
 {
 	$$ = ASTMake1(AST_TEMPLATE_EXPRESSION_ARGUMENT_PACK,
-			ASTMake1(AST_EXPRESSION, $1, ast_get_locus($1), NULL), 
+			ASTMake1(AST_EXPRESSION, $1, ast_get_locus($1), NULL),
              ast_get_locus($1), NULL);
 }
 | type_id_not_ellipsis ELLIPSIS %merge<ambiguityHandler>
@@ -6717,7 +6717,7 @@ handler : CATCH '(' exception_declaration ')' compound_statement
 }
 ;
 
-exception_declaration : type_specifier_seq_0 nonabstract_declarator  
+exception_declaration : type_specifier_seq_0 nonabstract_declarator
 {
 	$$ = ASTMake2(AST_EXCEPTION_DECLARATION, $1, $2, ast_get_locus($1), NULL);
 }
@@ -6729,7 +6729,7 @@ exception_declaration : type_specifier_seq_0 nonabstract_declarator
 {
 	$$ = ASTMake2(AST_EXCEPTION_DECLARATION, $1, NULL, ast_get_locus($1), NULL);
 }
-|  type_specifier_seq_ended_with_identifier nonglobal_nonabstract_declarator  
+|  type_specifier_seq_ended_with_identifier nonglobal_nonabstract_declarator
 {
 	$$ = ASTMake2(AST_EXCEPTION_DECLARATION, $1, $2, ast_get_locus($1), NULL);
 }
@@ -6758,7 +6758,7 @@ exception_specification : dynamic_exception_specification
 ;
 
 
-dynamic_exception_specification : THROW '(' ')' 
+dynamic_exception_specification : THROW '(' ')'
 {
 	$$ = ASTMake1(AST_EXCEPTION_SPECIFICATION, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), NULL);
 }

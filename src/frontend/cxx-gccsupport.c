@@ -1,23 +1,23 @@
 /*--------------------------------------------------------------------
   (C) Copyright 2006-2014 Barcelona Supercomputing Center
                           Centro Nacional de Supercomputacion
-  
+
   This file is part of Mercurium C/C++ source-to-source compiler.
-  
+
   See AUTHORS file in the top level directory for information
   regarding developers and contributors.
-  
+
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 3 of the License, or (at your option) any later version.
-  
+
   Mercurium C/C++ source-to-source compiler is distributed in the hope
   that it will be useful, but WITHOUT ANY WARRANTY; without even the
   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the GNU Lesser General Public License for more
   details.
-  
+
   You should have received a copy of the GNU Lesser General Public
   License along with Mercurium C/C++ source-to-source compiler; if
   not, write to the Free Software Foundation, Inc., 675 Mass Ave,
@@ -77,7 +77,7 @@ char gcc_attribute_is_type_attribute(const char* identifier)
     return is_type_attribute;
 }
 
-static char fix_gather_type_to_match_mode(gather_decl_spec_t* gather_info, 
+static char fix_gather_type_to_match_mode(gather_decl_spec_t* gather_info,
         char floating,
         char is_complex,
         _size_t bytes)
@@ -252,7 +252,7 @@ void gather_one_gcc_attribute(const char* attribute_name,
                 gather_info->is_vector = 1;
                 gather_info->vector_size = 16;
 
-                nodecl_expression_list = 
+                nodecl_expression_list =
                     nodecl_make_list_1(nodecl_make_text("vector__", ast_get_locus(argument)));
             }
         }
@@ -317,7 +317,7 @@ void gather_one_gcc_attribute(const char* attribute_name,
         {
             const char *size_mode = ASTText(argument);
 
-            nodecl_expression_list = 
+            nodecl_expression_list =
                 nodecl_make_list_1(nodecl_make_text(size_mode, ast_get_locus(argument)));
 
             // FIXME - Can a vector mode start with two underscores ?
@@ -332,9 +332,9 @@ void gather_one_gcc_attribute(const char* attribute_name,
                        SI - An integer, four times as wide as a QI mode integer, usually 32 bits.
                        DI - An integer, eight times as wide as a QI mode integer, usually 64 bits.
                        SF - A floating point value, as wide as a SI mode integer, usually 32 bits.
-                       DF - A floating point value, as wide as a DI mode integer, usually 64 bits. 
+                       DF - A floating point value, as wide as a DI mode integer, usually 64 bits.
                      */
-                    struct 
+                    struct
                     {
                         const char* mode_name;
                         char floating;
@@ -399,7 +399,7 @@ void gather_one_gcc_attribute(const char* attribute_name,
                         if (strcmp(size_mode, mode_list[i].mode_name) == 0)
                         {
                             found = 1;
-                            fix_gather_type_to_match_mode(gather_info, 
+                            fix_gather_type_to_match_mode(gather_info,
                                     mode_list[i].floating,
                                     mode_list[i].is_complex,
                                     mode_list[i].bytes);
@@ -443,7 +443,7 @@ void gather_one_gcc_attribute(const char* attribute_name,
                     p++;
 
 
-                    if ((*p == '\0') || 
+                    if ((*p == '\0') ||
                             (p == number_of_elements_str))
                     {
                         ignored = 1;
@@ -456,14 +456,14 @@ void gather_one_gcc_attribute(const char* attribute_name,
                         int num_elements = atoi(number_of_elements_str);
 
                         /*
-                           From gcc documentation: 
+                           From gcc documentation:
 
                            QI - An integer that is as wide as the smallest addressable unit, usually 8 bits.
                            HI - An integer, twice as wide as a QI mode integer, usually 16 bits.
                            SI - An integer, four times as wide as a QI mode integer, usually 32 bits.
                            DI - An integer, eight times as wide as a QI mode integer, usually 64 bits.
                            SF - A floating point value, as wide as a SI mode integer, usually 32 bits.
-                           DF - A floating point value, as wide as a DI mode integer, usually 64 bits. 
+                           DF - A floating point value, as wide as a DI mode integer, usually 64 bits.
                          */
                         if (*p != '\0')
                         {
@@ -667,7 +667,7 @@ void keep_gcc_attributes_in_symbol(
 
         if (found)
         {
-            // Update with the freshest value 
+            // Update with the freshest value
             gcc_attribute_t gcc_attr = symbol_entity_specs_get_gcc_attributes_num(entry, j - 1);
             gcc_attr.expression_list = gather_info->gcc_attributes[i].expression_list;
             symbol_entity_specs_set_gcc_attributes_num(entry, j - 1, gcc_attr);
@@ -787,7 +787,7 @@ static char eval_type_trait__is_trivially_copyable(type_t*, type_t*, const decl_
    else if type is a cv class or union type with copy assignment operators
    that are known not to throw an exception then the trait is true, else it is
    false. Requires: type shall be a complete type, an array type of unknown
-   bound, or is a void type. 
+   bound, or is a void type.
 
     */
 static char eval_type_trait__has_nothrow_assign(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
@@ -836,7 +836,7 @@ static char eval_type_trait__has_nothrow_assign(type_t* first_type, type_t* seco
    type is a cv class or union type (or array thereof) with a default
    constructor that is known not to throw an exception then the trait is true,
    else it is false. Requires: type shall be a complete type, an array type of
-   unknown bound, or is a void type. 
+   unknown bound, or is a void type.
 
 */
 static char eval_type_trait__has_nothrow_constructor(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
@@ -871,7 +871,7 @@ static char eval_type_trait__has_nothrow_constructor(type_t* first_type, type_t*
    is a cv class or union type with copy constructors that are known not to
    throw an exception then the trait is true, else it is false. Requires: type
    shall be a complete type, an array type of unknown bound, or is a void
-   type. 
+   type.
 
 */
 static char eval_type_trait__has_nothrow_copy(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
@@ -913,7 +913,7 @@ static char eval_type_trait__has_nothrow_copy(type_t* first_type, type_t* second
    Otherwise if __is_pod (type) is true then the trait is true, else if type is a
    cv class or union type with a trivial copy assignment ([class.copy]) then the
    trait is true, else it is false. Requires: type shall be a complete type, an
-   array type of unknown bound, or is a void type. 
+   array type of unknown bound, or is a void type.
 
 */
 static char eval_type_trait__has_trivial_assign(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
@@ -959,7 +959,7 @@ static char eval_type_trait__has_trivial_assign(type_t* first_type, type_t* seco
     class or union type (or array thereof) with a trivial default constructor
     ([class.ctor]) then the trait is true, else it is false. Requires: type
     shall be a complete type, an array type of unknown bound, or is a void
-    type. 
+    type.
 */
 static char eval_type_trait__has_trivial_constructor(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
 {
@@ -988,7 +988,7 @@ static char eval_type_trait__has_trivial_constructor(type_t* first_type, type_t*
    true, else if type is a cv class or union type with a trivial copy
    constructor ([class.copy]) then the trait is true, else it is false.
    Requires: type shall be a complete type, an array type of unknown bound, or is
-   a void type. 
+   a void type.
 
 */
 static char eval_type_trait__has_trivial_copy(type_t* first_type, type_t* second_type, const decl_context_t* decl_context, const locus_t* locus)
@@ -1029,7 +1029,7 @@ static char eval_type_trait__has_trivial_copy(type_t* first_type, type_t* second
    true, else if type is a cv class or union type (or array thereof) with a
    trivial destructor ([class.dtor]) then the trait is true, else it is false.
    Requires: type shall be a complete type, an array type of unknown bound, or is
-   a void type. 
+   a void type.
 
 */
 
@@ -1055,7 +1055,7 @@ static char eval_type_trait__has_trivial_destructor(type_t* first_type, type_t* 
 
     If type is a class type with a virtual destructor ([class.dtor]) then the
     trait is true, else it is false. Requires: type shall be a complete type,
-    an array type of unknown bound, or is a void type. 
+    an array type of unknown bound, or is a void type.
 */
 static char eval_type_trait__has_virtual_destructor(type_t* first_type, type_t* second_type UNUSED_PARAMETER, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
@@ -1076,10 +1076,10 @@ static char eval_type_trait__has_virtual_destructor(type_t* first_type, type_t* 
 
     If type is an abstract class ([class.abstract]) then the trait is true,
     else it is false. Requires: type shall be a complete type, an array type of
-    unknown bound, or is a void type. 
+    unknown bound, or is a void type.
 */
-static char eval_type_trait__is_abstract(type_t* first_type UNUSED_PARAMETER, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_abstract(type_t* first_type UNUSED_PARAMETER,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     if (is_class_type(first_type))
@@ -1100,7 +1100,7 @@ static char eval_type_trait__is_abstract(type_t* first_type UNUSED_PARAMETER,
    class type is considered is own base. Requires: if __is_class (base_type)
    and __is_class (derived_type) are true and base_type and derived_type are
    not the same type (disregarding cv-qualifiers), derived_type shall be a
-   complete type. Diagnostic is produced if this requirement is not met. 
+   complete type. Diagnostic is produced if this requirement is not met.
 */
 
 static char eval_type_trait__is_base_of(type_t* base_type, type_t* derived_type, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus)
@@ -1116,9 +1116,9 @@ static char eval_type_trait__is_base_of(type_t* base_type, type_t* derived_type,
 /*
    __is_class (type)
 
-   If type is a cv class type, and not a union type ([basic.compound]) the the trait is true, else it is false. 
+   If type is a cv class type, and not a union type ([basic.compound]) the the trait is true, else it is false.
 */
-static char eval_type_trait__is_class(type_t* first_type, type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_class(type_t* first_type, type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     return is_class_type(first_type)
@@ -1129,8 +1129,8 @@ static char eval_type_trait__is_class(type_t* first_type, type_t* second_type UN
 /*
  * UNDOCUMENTED !!!
  */
-static char eval_type_trait__is_convertible_to(type_t* first_type UNUSED_PARAMETER, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_convertible_to(type_t* first_type UNUSED_PARAMETER,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     WARNING_MESSAGE("Undocumented type trait '__is_convertible' used", 0);
@@ -1146,10 +1146,10 @@ static char eval_type_trait__is_convertible_to(type_t* first_type UNUSED_PARAMET
    has no virtual members, and type has no virtual base classes, and type has
    no base classes base_type for which __is_empty (base_type) is false.
    Requires: type shall be a complete type, an array type of unknown bound, or is
-   a void type. 
+   a void type.
 */
-static char eval_type_trait__is_empty(type_t* first_type, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_empty(type_t* first_type,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context, const locus_t* locus)
 {
     if (!eval_type_trait__is_class(first_type, NULL, decl_context, locus))
@@ -1165,7 +1165,7 @@ static char eval_type_trait__is_empty(type_t* first_type,
    __is_enum (type)
 
    If type is a cv enumeration type ([basic.compound]) the the trait is true,
-   else it is false. 
+   else it is false.
 */
 static char eval_type_trait__is_enum(type_t* first_type, type_t* second_type UNUSED_PARAMETER, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
@@ -1176,7 +1176,7 @@ static char eval_type_trait__is_enum(type_t* first_type, type_t* second_type UNU
      __is_literal_type (type)
 
     If type is a literal type ([basic.types]) the trait is true, else it is false.
-    Requires: type shall be a complete type, (possibly cv-qualified) void, or an array of unknown bound. 
+    Requires: type shall be a complete type, (possibly cv-qualified) void, or an array of unknown bound.
 */
 static char eval_type_trait__is_literal_type(type_t* first_type, type_t* second_type UNUSED_PARAMETER, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
@@ -1188,10 +1188,10 @@ static char eval_type_trait__is_literal_type(type_t* first_type, type_t* second_
 
    If type is a cv POD type ([basic.types]) then the trait is true, else it is
    false. Requires: type shall be a complete type, an array type of unknown
-   bound, or is a void type. 
+   bound, or is a void type.
 */
-static char eval_type_trait__is_pod(type_t* first_type, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_pod(type_t* first_type,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     return is_pod_type(first_type);
@@ -1205,8 +1205,8 @@ static char eval_type_trait__is_pod(type_t* first_type,
    unknown bound, or is a void type
 
 */
-static char eval_type_trait__is_polymorphic(type_t* first_type, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_polymorphic(type_t* first_type,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     if (is_class_type(first_type))
@@ -1255,17 +1255,17 @@ static char eval_type_trait__is_trivial(type_t* first_type,
 /*
    __is_union (type)
 
-   If type is a cv union type ([basic.compound]) then the trait is true, else it is false. 
+   If type is a cv union type ([basic.compound]) then the trait is true, else it is false.
 */
-static char eval_type_trait__is_union(type_t* first_type, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_union(type_t* first_type,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     return is_union_type(first_type);
 }
 
-static char eval_type_trait__is_final(type_t* first_type, 
-        type_t* second_type UNUSED_PARAMETER, 
+static char eval_type_trait__is_final(type_t* first_type,
+        type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
     return is_named_class_type(first_type)
