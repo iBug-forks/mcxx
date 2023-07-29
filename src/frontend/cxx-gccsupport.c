@@ -771,6 +771,7 @@ static char eval_type_trait__is_enum(type_t*, type_t*, const decl_context_t*, co
 static char eval_type_trait__is_literal_type(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_pod(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_polymorphic(type_t*, type_t*, const decl_context_t*, const locus_t*);
+static char eval_type_trait__is_same(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_standard_layout(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_trivial(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_union(type_t*, type_t*, const decl_context_t*, const locus_t*);
@@ -1114,6 +1115,17 @@ static char eval_type_trait__is_base_of(type_t* base_type, type_t* derived_type,
 }
 
 /*
+   __is_same (type_1, type_2)
+
+   If both types refers to the same type (taking C/V qualifiers into account), the trait is true.
+*/
+
+static char eval_type_trait__is_same(type_t* type_1, type_t* type_2, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
+{
+    return type_1 == type_2;
+}
+
+/*
    __is_class (type)
 
    If type is a cv class type, and not a union type ([basic.compound]) the the trait is true, else it is false.
@@ -1373,6 +1385,7 @@ gxx_type_traits_fun_type_t type_traits_fun_list[] =
     { "__is_literal_type", eval_type_trait__is_literal_type },
     { "__is_pod", eval_type_trait__is_pod },
     { "__is_polymorphic", eval_type_trait__is_polymorphic },
+    { "__is_same", eval_type_trait__is_same },
     { "__is_standard_layout", eval_type_trait__is_standard_layout },
     { "__is_trivial", eval_type_trait__is_trivial },
     { "__is_union", eval_type_trait__is_union },

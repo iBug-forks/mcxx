@@ -89,6 +89,7 @@ static lexer_keyword_t gxx_43_keywords[] =
     { "__is_literal_type", GXX_IS_LITERAL_TYPE },
     { "__is_pod", GXX_IS_POD },
     { "__is_polymorphic", GXX_IS_POLYMORPHIC },
+    { "__is_same", GXX_IS_SAME },
     { "__is_standard_layout", GXX_IS_STANDARD_LAYOUT },
     { "__is_trivial", GXX_IS_TRIVIAL },
     { "__is_union", GXX_IS_UNION },
