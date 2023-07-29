@@ -788,7 +788,7 @@ then
    [
       MIC_LIBS=${ICC%icc}/../../compiler/lib/mic/
    ])
-   
+
    if test x$nanox_include = x -o x$nanox_lib = x;
    then
       AC_MSG_ERROR([OpenMP support requires '--with-nanox=dir'. See --help.])
@@ -1173,6 +1173,83 @@ then
    COMPILER_NAMES="${COMPILER_NAMES} mcc mcxx mf95 mfc"
 fi
 dnl ---------------------- End of Support for OmpSs-2 Nanos6 -----------------------------------------
+
+
+dnl --------------------- Support for Dataflow DARTS ---------------------------------
+is_enabled_df="no"
+
+darts=""
+darts_include=""
+darts_lib=""
+
+AC_MSG_CHECKING([if enabled dataflow support in the compiler for DARTS])
+AC_ARG_ENABLE([dataflow],
+  AS_HELP_STRING([--enable-dataflow], [Enables support of dataflow using DARTS (default is disabled)]),
+  [
+    if test x$enableval = xyes -o x$enableval = x;
+    then
+        is_enabled_df="yes"
+        AC_MSG_RESULT([yes])
+    else if test x$enableval = xno;
+         then
+            is_enabled_df="no"
+            AC_MSG_RESULT([no])
+         else
+            AC_MSG_ERROR([This option can only be given 'yes' or 'no' values])
+         fi
+    fi
+  ],
+  [
+     is_enabled_df="no"
+     AC_MSG_RESULT([no])
+  ]
+)
+
+if test x$is_enabled_df = xyes
+then
+    AC_ARG_WITH([darts],
+        AS_HELP_STRING([--with-darts=dir], [Directory of DARTS installation]),
+        [
+            darts="${withval}"
+            darts_include="${withval}/include"
+            darts_lib="${withval}/lib"
+        ]
+    )
+
+    AC_ARG_WITH([darts-include],
+        AS_HELP_STRING([--with-darts-include=dir], [Directory of DARTS headers]),
+        [
+            darts_include="${withval}"
+        ]
+    )
+
+    AC_ARG_WITH([darts-lib],
+        AS_HELP_STRING([--with-darts-lib=dir], [Directory of DARTS libraries]),
+        [
+            darts_lib="${withval}"
+        ]
+    )
+
+    # CPPFLAGSBACKUP="$CPPFLAGS"
+    # CPPFLAGS="$CPPFLAGS -I$darts_include"
+
+    # AC_CHECK_HEADER([darts.h],
+    #         [break],
+    #         [AC_MSG_ERROR([DARTS support was required but 'darts.h' was not found])])
+
+    # CPPFLAGS="$CPPFLAGSBACKUP"
+fi
+
+AC_SUBST([DARTS_INCLUDES], ["${darts_include}"])
+AC_SUBST([DARTS_LIB],      ["${darts_lib}"])
+AC_SUBST([DATAFLOW_ENABLED],  ["${is_enabled_df}"])
+
+if test x$is_enabled_df = xyes
+then
+    COMPILER_NAMES="${COMPILER_NAMES} dfcc dfcxx"
+    INSTALL_CONFIG_FILES="${INSTALL_CONFIG_FILES} 50.config.dataflow"
+fi
+dnl ---------------------- End of Support for Dataflow -----------------------------------------
 
 
 dnl --------------------- Support for GOMP ---------------------------------
@@ -2416,6 +2493,15 @@ then
   echo ""
   echo "   Nanos6 includes :" $nanos6_include
   echo "   Nanos6 libraries:" $nanos6_lib
+fi
+
+echo ""
+echo " * DARTS Dataflow :" $is_enabled_df
+if test x$is_enabled_df = xyes;
+then
+  echo ""
+  echo "   DARTS includes :" $darts_include
+  echo "   DARTS libraries:" $darts_lib
 fi
 
 echo ""

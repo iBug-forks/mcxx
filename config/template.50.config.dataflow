@@ -1,0 +1,34 @@
+# Dataflow profiles
+
+[dataflow-base]
+{debug} options = -g
+
+{dataflow} options =
+#{dataflow} compiler_phase = libdarts.so
+{dataflow} preprocessor_options = -I@DARTS_INCLUDES@
+{dataflow} linker_options = -L@DARTS_LIB@ -lamm -lcodelet.a -lcommon -ldarts -lscheduler -lthreadlocal  -ltbb
+
+
+[dataflow-gcc-base : dataflow-base]
+preprocessor_options = -E
+#-D_DEFAULT_SOURCE -D_GNU_SOURCE
+
+
+[dfcc : dataflow-gcc-base]
+language = C
+options = --native-vendor=gnu
+preprocessor_name = @GCC@
+compiler_name = @GCC@
+compiler_options =
+linker_name = @GCC@
+linker_options =
+
+
+[dfcxx : dataflow-gcc-base]
+language = C++
+options = --native-vendor=gnu
+preprocessor_name = @G++@
+compiler_name = @G++@
+compiler_options =
+linker_name = @G++@
+linker_options =

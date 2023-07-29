@@ -2506,7 +2506,7 @@ src_tl_ompss_oss_lint_libtloss_lint_la_CXXFLAGS = $(phases_cxxflags) \
                           -I $(top_srcdir)/src/tl/analysis/tdg \
                           -I $(top_srcdir)/src/tl/analysis/interface \
                           $(END)
-                          
+
 
 src_tl_ompss_oss_lint_libtloss_lint_la_LDFLAGS = $(phases_ldflags)
 src_tl_ompss_oss_lint_libtloss_lint_la_LIBADD = $(phases_libadd) \
@@ -3400,6 +3400,7 @@ CONFIG_FILES =  \
        config/10.config.gomp-omp-base \
        config/10.config.intel-omp-base \
        config/40.config.cuda \
+       config/50.config.dataflow \
        config/50.config.omp.fpga \
        config/50.config.omp.mercurium \
        config/50.config.omp.profiling \
@@ -3494,6 +3495,8 @@ config_edit = \
      -e 's|@NANOS6_GATE[@]|$(NANOS6_GATE)|g' \
      -e 's|@NANOS6_INCLUDES[@]|$(NANOS6_INCLUDES)|g' \
      -e 's|@NANOS6_LIB[@]|$(NANOS6_LIB)|g' \
+     -e 's|@DARTS_INCLUDES[@]|$(DARTS_INCLUDES)|g' \
+     -e 's|@DARTS_LIB[@]|$(DARTS_LIB)|g' \
      -e 's|@GOMP_OMP_LIB[@]|$(GOMP_OMP_LIB)|g' \
      -e 's|@GFORTRAN_8_OR_GREATER_ARRAY_DESCRIPTORS[@]|$(GFORTRAN_8_OR_GREATER_ARRAY_DESCRIPTORS)|g' \
      -e 's|@TCL_GATE[@]|$(TCL_GATE)|g' \
@@ -3525,7 +3528,7 @@ BUILT_SOURCES += $(INSTALL_CONFIG_FILES) $(INSTALL_SCRIPT_COMPILER_NAMES)
 # Generates configs
 config/% : config/template.$(notdir %) Makefile
 	$(AM_V_GEN)( $(config_edit) "$<" > "$@.tmp"; mv -f "$@.tmp" "$@" )
- 
+
 config-install-data-hook: remove-old-profiles
 
 EXTRA_DIST += \
