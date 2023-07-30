@@ -766,6 +766,7 @@ static char eval_type_trait__is_abstract(type_t*, type_t*, const decl_context_t*
 static char eval_type_trait__is_base_of(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_class(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_convertible_to(type_t*, type_t*, const decl_context_t*, const locus_t*);
+static char eval_type_trait__is_constructible(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_empty(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_enum(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_literal_type(type_t*, type_t*, const decl_context_t*, const locus_t*);
@@ -1115,17 +1116,6 @@ static char eval_type_trait__is_base_of(type_t* base_type, type_t* derived_type,
 }
 
 /*
-   __is_same (type_1, type_2)
-
-   If both types refers to the same type (taking C/V qualifiers into account), the trait is true.
-*/
-
-static char eval_type_trait__is_same(type_t* type_1, type_t* type_2, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
-{
-    return type_1 == type_2;
-}
-
-/*
    __is_class (type)
 
    If type is a cv class type, and not a union type ([basic.compound]) the the trait is true, else it is false.
@@ -1145,7 +1135,27 @@ static char eval_type_trait__is_convertible_to(type_t* first_type UNUSED_PARAMET
         type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
-    WARNING_MESSAGE("Undocumented type trait '__is_convertible' used", 0);
+    WARNING_MESSAGE("Undocumented type trait '__is_convertible_to' used", 0);
+    return 0;
+}
+
+/*
+   __is_constructible (type)
+
+    If __is_pod (type) is true then the trait is true, else if type is a cv
+    class or union type (or array thereof) with a trivial default constructor
+    ([class.ctor]) then the trait is true, else it is false. Requires: type
+    shall be a complete type, an array type of unknown bound, or is a void
+    type.
+*/
+static char eval_type_trait__is_constructible(type_t* first_type, type_t* second_type UNUSED_PARAMETER, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
+{
+    if (eval_type_trait__has_trivial_constructor(first_type, second_type, decl_context, locus))
+        return 1;
+
+    if (eval_type_trait__has_nothrow_constructor(first_type, second_type, decl_context, locus))
+        return 1;
+
     return 0;
 }
 
@@ -1232,6 +1242,17 @@ static char eval_type_trait__is_polymorphic(type_t* first_type,
     }
 
     return 0;
+}
+
+/*
+   __is_same (type_1, type_2)
+
+   If both types refers to the same type (taking C/V qualifiers into account), the trait is true.
+*/
+
+static char eval_type_trait__is_same(type_t* type_1, type_t* type_2, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
+{
+    return type_1 == type_2;
 }
 
 /*
@@ -1380,6 +1401,7 @@ gxx_type_traits_fun_type_t type_traits_fun_list[] =
     { "__is_base_of", eval_type_trait__is_base_of },
     { "__is_class", eval_type_trait__is_class },
     { "__is_convertible_to", eval_type_trait__is_convertible_to },
+    { "__is_constructible", eval_type_trait__is_constructible },
     { "__is_empty", eval_type_trait__is_empty },
     { "__is_enum", eval_type_trait__is_enum },
     { "__is_literal_type", eval_type_trait__is_literal_type },

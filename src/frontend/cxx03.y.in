@@ -208,6 +208,7 @@ void yyerror(AST* parsed_tree UNUSED_PARAMETER, const char* c);
 %token<token_atrib> GXX_IS_BASE_OF "__is_base_of"
 %token<token_atrib> GXX_IS_CLASS "__is_class"
 %token<token_atrib> GXX_IS_CONVERTIBLE_TO "__is_convertible_to"
+%token<token_atrib> GXX_IS_CONSTRUCTIBLE "__is_constructible"
 %token<token_atrib> GXX_IS_EMPTY "__is_empty"
 %token<token_atrib> GXX_IS_ENUM "__is_enum"
 %token<token_atrib> GXX_IS_LITERAL_TYPE "__is_literal_type"
@@ -4471,6 +4472,7 @@ primary_expression : literal
      __is_base_of ( type-id , type-id )
      __is_class ( type-id )
      __is_convertible_to ( type-id , type-id )
+     __is_constructible ( type-id )
      __is_empty ( type-id )
      __is_enum ( type-id )
      __is_literal_type ( type-id )
@@ -4528,6 +4530,10 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 | GXX_IS_CONVERTIBLE_TO '(' type_id ',' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
+}
+| GXX_IS_CONSTRUCTIBLE '(' type_id ')'
+{
+    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
 | GXX_IS_EMPTY '(' type_id ')'
 {
