@@ -763,6 +763,7 @@ static char eval_type_trait__has_trivial_copy(type_t*, type_t*, const decl_conte
 static char eval_type_trait__has_trivial_destructor(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__has_virtual_destructor(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_abstract(type_t*, type_t*, const decl_context_t*, const locus_t*);
+static char eval_type_trait__is_assignable(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_base_of(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_class(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_convertible_to(type_t*, type_t*, const decl_context_t*, const locus_t*);
@@ -777,6 +778,8 @@ static char eval_type_trait__is_standard_layout(type_t*, type_t*, const decl_con
 static char eval_type_trait__is_trivial(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_union(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_final(type_t*, type_t*, const decl_context_t*, const locus_t*);
+static char eval_type_trait__is_nothrow_assignable(type_t*, type_t*, const decl_context_t*, const locus_t*);
+static char eval_type_trait__is_nothrow_constructible(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_trivially_assignable(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_trivially_constructible(type_t*, type_t*, const decl_context_t*, const locus_t*);
 static char eval_type_trait__is_trivially_copyable(type_t*, type_t*, const decl_context_t*, const locus_t*);
@@ -1080,7 +1083,7 @@ static char eval_type_trait__has_virtual_destructor(type_t* first_type, type_t* 
     else it is false. Requires: type shall be a complete type, an array type of
     unknown bound, or is a void type.
 */
-static char eval_type_trait__is_abstract(type_t* first_type UNUSED_PARAMETER,
+static char eval_type_trait__is_abstract(type_t* first_type,
         type_t* second_type UNUSED_PARAMETER,
         const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
@@ -1089,6 +1092,23 @@ static char eval_type_trait__is_abstract(type_t* first_type UNUSED_PARAMETER,
         type_t* class_type = get_actual_class_type(first_type);
         return class_type_is_abstract(class_type);
     }
+
+    return 0;
+}
+
+/*
+   __is_assignable (first_type, second_type)
+
+   If an object of first_type is assignable from an object of second_type then this trait is true.
+*/
+
+static char eval_type_trait__is_assignable(type_t* first_type, type_t* second_type, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus)
+{
+    if (eval_type_trait__is_trivially_assignable(first_type, second_type, decl_context, locus))
+        return 1;
+
+    if (is_const_qualified_type(first_type))
+        return 0;
 
     return 0;
 }
@@ -1250,9 +1270,9 @@ static char eval_type_trait__is_polymorphic(type_t* first_type,
    If both types refers to the same type (taking C/V qualifiers into account), the trait is true.
 */
 
-static char eval_type_trait__is_same(type_t* type_1, type_t* type_2, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
+static char eval_type_trait__is_same(type_t* first_type, type_t* second_type, const decl_context_t* decl_context UNUSED_PARAMETER, const locus_t* locus UNUSED_PARAMETER)
 {
-    return type_1 == type_2;
+    return first_type == second_type;
 }
 
 /*
@@ -1341,7 +1361,7 @@ static char eval_type_trait__is_trivially_constructible(type_t* first_type,
 }
 
 static char eval_type_trait__is_trivially_assignable(type_t* first_type,
-        type_t* second_type UNUSED_PARAMETER,
+        type_t* second_type,
         const decl_context_t* decl_context,
         const locus_t* locus)
 {
@@ -1379,6 +1399,28 @@ static char eval_type_trait__is_trivially_copyable(type_t* first_type,
     return 0;
 }
 
+static char eval_type_trait__is_nothrow_assignable(type_t* first_type,
+        type_t* second_type,
+        const decl_context_t* decl_context,
+        const locus_t* locus)
+{
+    if (eval_type_trait__is_assignable(first_type, second_type, decl_context, locus))
+        return 1;
+
+    return 0;
+}
+
+static char eval_type_trait__is_nothrow_constructible(type_t* first_type,
+        type_t* second_type,
+        const decl_context_t* decl_context,
+        const locus_t* locus)
+{
+    if (eval_type_trait__is_nothrow_constructible(first_type, second_type, decl_context, locus))
+        return 1;
+
+    return 0;
+}
+
 typedef
 struct gxx_type_traits_fun_type_tag
 {
@@ -1398,6 +1440,7 @@ gxx_type_traits_fun_type_t type_traits_fun_list[] =
     { "__has_trivial_destructor", eval_type_trait__has_trivial_destructor },
     { "__has_virtual_destructor", eval_type_trait__has_virtual_destructor },
     { "__is_abstract", eval_type_trait__is_abstract },
+    { "__is_assignable", eval_type_trait__is_assignable },
     { "__is_base_of", eval_type_trait__is_base_of },
     { "__is_class", eval_type_trait__is_class },
     { "__is_convertible_to", eval_type_trait__is_convertible_to },
@@ -1412,6 +1455,8 @@ gxx_type_traits_fun_type_t type_traits_fun_list[] =
     { "__is_trivial", eval_type_trait__is_trivial },
     { "__is_union", eval_type_trait__is_union },
     { "__is_final", eval_type_trait__is_final },
+    { "__is_nothrow_assignable", eval_type_trait__is_nothrow_assignable },
+    { "__is_nothrow_constructible", eval_type_trait__is_nothrow_constructible },
     { "__is_trivially_assignable", eval_type_trait__is_trivially_assignable },
     { "__is_trivially_constructible", eval_type_trait__is_trivially_constructible },
     { "__is_trivially_copyable", eval_type_trait__is_trivially_copyable },

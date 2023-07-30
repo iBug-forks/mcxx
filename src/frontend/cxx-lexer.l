@@ -81,6 +81,7 @@ static lexer_keyword_t gxx_43_keywords[] =
     { "__has_trivial_destructor", GXX_HAS_TRIVIAL_DESTRUCTOR },
     { "__has_virtual_destructor", GXX_HAS_VIRTUAL_DESTRUCTOR },
     { "__is_abstract", GXX_IS_ABSTRACT },
+    { "__is_assignable", GXX_IS_ASSIGNABLE },
     { "__is_base_of", GXX_IS_BASE_OF },
     { "__is_class", GXX_IS_CLASS },
     { "__is_convertible_to", GXX_IS_CONVERTIBLE_TO },
@@ -96,6 +97,8 @@ static lexer_keyword_t gxx_43_keywords[] =
     { "__is_union", GXX_IS_UNION },
     { "__is_final", GXX_IS_FINAL },
     { "__underlying_type", GXX_UNDERLYING_TYPE },
+    { "__is_nothrow_assignable", GXX_IS_NOTHROW_ASSIGNABLE },
+    { "__is_nothrow_constructible", GXX_IS_NOTHROW_CONSTRUCTIBLE },
     { "__is_trivially_assignable", GXX_IS_TRIVIALLY_ASSIGNABLE },
     { "__is_trivially_constructible", GXX_IS_TRIVIALLY_CONSTRUCTIBLE },
     { "__is_trivially_copyable", GXX_IS_TRIVIALLY_COPYABLE },
@@ -1377,19 +1380,24 @@ type {
 "__has_trivial_destructor" |
 "__has_virtual_destructor" |
 "__is_abstract" |
+"__is_assignable" |
 "__is_base_of" |
 "__is_class" |
+"__is_constructible" |
 "__is_convertible_to" |
 "__is_empty" |
 "__is_enum" |
 "__is_literal_type" |
 "__is_pod" |
 "__is_polymorphic" |
+"__is_same" |
 "__is_standard_layout" |
 "__is_trivial" |
 "__is_union" |
 "__is_final" |
 "__underlying_type" |
+"__is_nothrow_assignable" |
+"__is_nothrow_constructible" |
 "__is_trivially_assignable" |
 "__is_trivially_constructible" |
 "__is_trivially_copyable" {

@@ -205,6 +205,7 @@ void yyerror(AST* parsed_tree UNUSED_PARAMETER, const char* c);
 %token<token_atrib> GXX_HAS_TRIVIAL_DESTRUCTOR "__has_trivial_destructor"
 %token<token_atrib> GXX_HAS_VIRTUAL_DESTRUCTOR "__has_virtual_destructor"
 %token<token_atrib> GXX_IS_ABSTRACT "__is_abstract"
+%token<token_atrib> GXX_IS_ASSIGNABLE "__is_assignable"
 %token<token_atrib> GXX_IS_BASE_OF "__is_base_of"
 %token<token_atrib> GXX_IS_CLASS "__is_class"
 %token<token_atrib> GXX_IS_CONVERTIBLE_TO "__is_convertible_to"
@@ -220,6 +221,8 @@ void yyerror(AST* parsed_tree UNUSED_PARAMETER, const char* c);
 %token<token_atrib> GXX_IS_UNION "__is_union"
 %token<token_atrib> GXX_IS_FINAL "__is_final"
 %token<token_atrib> GXX_UNDERLYING_TYPE "__underlying_type"
+%token<token_atrib> GXX_IS_NOTHROW_ASSIGNABLE "__is_nothrow_assignable"
+%token<token_atrib> GXX_IS_NOTHROW_CONSTRUCTIBLE "__is_nothrow_constructible"
 %token<token_atrib> GXX_IS_TRIVIALLY_ASSIGNABLE "__is_trivially_assignable"
 %token<token_atrib> GXX_IS_TRIVIALLY_CONSTRUCTIBLE "__is_trivially_constructible"
 %token<token_atrib> GXX_IS_TRIVIALLY_COPYABLE "__is_trivially_copyable"
@@ -4469,18 +4472,21 @@ primary_expression : literal
      __has_trivial_destructor ( type-id )
      __has_virtual_destructor ( type-id )
      __is_abstract ( type-id )
+     __is_assignable ( type-id , type-id )
      __is_base_of ( type-id , type-id )
      __is_class ( type-id )
      __is_convertible_to ( type-id , type-id )
-     __is_constructible ( type-id )
+     __is_constructible ( type-id, type-id... )
      __is_empty ( type-id )
      __is_enum ( type-id )
      __is_literal_type ( type-id )
+     __is_nothrow_constructible ( type-id, type-id... )
      __is_pod ( type-id )
      __is_polymorphic ( type-id )
      __is_same ( type-id , type-id )
      __is_standard_layout ( type-id )
      __is_trivial ( type-id )
+     __is_trivially_constructible ( type-id, type-id... )
      __is_union ( type-id )
 */
 gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
@@ -4519,6 +4525,10 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
+| GXX_IS_ASSIGNABLE '(' type_id ',' type_id ')'
+{
+    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
+}
 | GXX_IS_BASE_OF '(' type_id ',' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
@@ -4531,9 +4541,9 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
-| GXX_IS_CONSTRUCTIBLE '(' type_id ')'
+| GXX_IS_CONSTRUCTIBLE '(' type_id gxx_trait_comma_type_id_list_opt ')'
 {
-    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
+    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $4, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
 | GXX_IS_EMPTY '(' type_id ')'
 {
@@ -4546,6 +4556,14 @@ gnu_type_traits : GXX_HAS_NOTHROW_ASSIGN '(' type_id ')'
 | GXX_IS_LITERAL_TYPE '(' type_id ')'
 {
     $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, NULL, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
+}
+| GXX_IS_NOTHROW_ASSIGNABLE '(' type_id ',' type_id ')'
+{
+    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $5, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
+}
+| GXX_IS_NOTHROW_CONSTRUCTIBLE '(' type_id gxx_trait_comma_type_id_list_opt ')'
+{
+    $$ = ASTMake2(AST_GXX_TYPE_TRAITS, $3, $4, make_locus(@1.first_filename, @1.first_line, @1.first_column), $1.token_text);
 }
 | GXX_IS_POD '(' type_id ')'
 {
